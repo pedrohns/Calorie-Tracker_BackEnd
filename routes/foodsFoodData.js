@@ -8,34 +8,30 @@ var calorieDao = new sql(connectionBank)
 require('dotenv').config()
 
 module.exports = function (app) {
-  app.get("/", function (req, res) {
-    console.log("Veio aqui por rotas!!!")
-  })
-
   app.get("/createListFoodFatSecret", async function (req, response) {
-      let counter = 10;
-      let isFinished = false;
-      for (let index = 0; index < counter; index++) {
-          let data = await fetch(consts.path, {
-              headers: {
-                  Accept: "application/json",
-                  Authorization: `Bearer ${consts.token}`
-              }, method: 'POST'
-          })
-          let url = await data.json()
-          if(url.foods_search.results != undefined){
-            isFinished = await extractDesiredValuesFatSecret(url.foods_search.results.food,index,counter)
-            if(isFinished == true){
-              response.status(200).send('Término da lista de comidas')
-              process.exit()
-            } else {
-              continue;
-            }
-          } else {
-            response.status(200).send('Erro no token ou não possui resultados')
-            process.exit();
-          }
+    let counter = 10;
+    let isFinished = false;
+    for (let index = 0; index < counter; index++) {
+      let data = await fetch(consts.path, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${consts.token}`
+        }, method: 'POST'
+      })
+      let url = await data.json()
+      if (url.foods_search.results != undefined) {
+        isFinished = await extractDesiredValuesFatSecret(url.foods_search.results.food, index, counter)
+        if (isFinished == true) {
+          response.status(200).send('Término da lista de comidas')
+          process.exit()
+        } else {
+          continue;
+        }
+      } else {
+        response.status(200).send('Erro no token ou não possui resultados')
+        process.exit();
       }
+    }
   })
 
   app.get("/createListFood", async function (req, response) {
@@ -93,7 +89,7 @@ module.exports = function (app) {
       console.warn('Não é um array:', typeof data)
       return false;
     }
-    
+
     const extractedData = data.map(item => ({
       fdcId: item.food_id,
       description: item.food_name,
@@ -109,12 +105,12 @@ module.exports = function (app) {
       insertData(foodData);
     });
 
-    if(counter - idx == 1){
+    if (counter - idx == 1) {
       return true;
     } else {
       return false;
     }
-    
+
   }
 
   async function extractDesiredValues(data) {
